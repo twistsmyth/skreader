@@ -1,0 +1,41 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- script: echo Hello, world!
+  displayName: 'Run a one-line script'
+
+- script: |
+    sudo apt-get install software-properties-common git cmake g++ curl wget -y
+    sudo apt-get update && sudo apt-get upgrade -y
+    # we need git to clone the repo
+    echo "== Cloning installation"
+    git clone --branch V$(nanover) --recursive https://github.com/nanocurrency/nano-node.git nano_build
+    cd nano_build
+    export BOOST_ROOT=`pwd`/../boost_build
+    bash util/build_prep/bootstrap_boost.sh -m
+    echo "== Starting installation"
+    cmake -G "Unix Makefiles" .
+    make nano_node
+    cp nano_node $(Build.ArtifactStagingDirectory)/nano_node
+  displayName: 'Run a multi-line script'
+
+- task: UniversalPackages@0
+  inputs:
+    command: 'publish'
+    publishDirectory: '$(Build.ArtifactStagingDirectory)'
+    feedsToUsePublish: 'internal'
+    vstsFeedPublish: 'b8aaacca-22a0-4314-9ec2-200f6b679f1f/4f4381b9-0259-42e8-b17d-1b4f17c849f0'
+    vstsFeedPackagePublish: 'nano'
+    versionOption: 'custom'
+    versionPublish: '0.22.1'
+    packagePublishDescription: 'nano node'
+    publishedPackageVar: 'nano'
