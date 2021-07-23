@@ -38,7 +38,6 @@ steps:
     feedsToUsePublish: 'internal'
     vstsFeedPublish: 'b8aaacca-22a0-4314-9ec2-200f6b679f1f/4f4381b9-0259-42e8-b17d-1b4f17c849f0'
     vstsFeedPackagePublish: 'nano'
-    versionOption: 'custom'
-    versionPublish: '0.22.1'
+    versionOption: 'patch'
     packagePublishDescription: 'nano node'
     publishedPackageVar: 'nano'
